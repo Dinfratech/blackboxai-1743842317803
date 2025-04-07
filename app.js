@@ -594,18 +594,6 @@ class RoomRentSystem {
                             <option value="Other">Other</option>
                         </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-gray-700">Period From</label>
-                            <input type="date" id="periodFrom" required
-                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700">Period To</label>
-                            <input type="date" id="periodTo" required
-                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                        </div>
-                    </div>
                     <div>
                         <label class="block text-gray-700">Rent (₹)</label>
                         <input type="number" id="roomRent" required
@@ -1372,10 +1360,17 @@ class RoomRentSystem {
                         <input type="date" id="paymentDate" required
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
-                    <div>
-                        <label class="block text-gray-700">For the Month of</label>
-                        <input type="month" id="paymentForMonth" required
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700">Period From</label>
+                            <input type="date" id="paymentPeriodFrom" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Period To</label>
+                            <input type="date" id="paymentPeriodTo" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-gray-700">Payment Type</label>
@@ -1452,16 +1447,18 @@ class RoomRentSystem {
                 });
             }
 
-            room.payments.push({
+            const paymentData = {
                 id: Date.now(),
                 amount: paymentType === 'electricity' ? 0 : amount,
                 electricityAmount: paymentType === 'rent_electricity' ? electricityAmount : 0,
-                date,
-                forMonth: document.getElementById('paymentForMonth').value,
+                date: date,
+                periodFrom: document.getElementById('paymentPeriodFrom').value,
+                periodTo: document.getElementById('paymentPeriodTo').value,
                 type: paymentType,
                 method: document.getElementById('paymentMethod').value,
                 recordedAt: new Date().toISOString()
-            });
+            };
+            room.payments.push(paymentData);
 
         this.saveData();
         alert('Payment recorded successfully');
