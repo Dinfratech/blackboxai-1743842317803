@@ -186,96 +186,90 @@ class RoomRentSystem {
                     My Profile
                 </button>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Room Owners Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                    <h3 class="text-lg font-semibold mb-2">Room Owners</h3>
-                    <p class="text-3xl font-bold mb-2">${this.owners.length}</p>
-                    <button onclick="app.showOwners()" 
-                        class="text-blue-600 hover:text-blue-800 font-medium">View All</button>
-                </div>
-                
-                <!-- Rooms Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                    <h3 class="text-lg font-semibold mb-2">Rooms</h3>
-                    <p class="text-3xl font-bold mb-2">${this.rooms.length}</p>
-                    <button onclick="app.showRooms()" 
-                        class="text-green-600 hover:text-green-800 font-medium">View All</button>
-                </div>
-                
-                <!-- Workers Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
-                    <h3 class="text-lg font-semibold mb-2">Workers/Staff</h3>
-                    <p class="text-3xl font-bold mb-2">${this.workers.length}</p>
-                    <button onclick="app.showWorkers()" 
-                        class="text-purple-600 hover:text-purple-800 font-medium">View All</button>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Data Management -->
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-indigo-500">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-database mr-2 text-indigo-600"></i> Data Management
+                    </h3>
+                    <div class="space-y-3">
+                        <button onclick="app.showOwners()" class="w-full flex items-center p-3 hover:bg-indigo-50 rounded-lg transition">
+                            <i class="fas fa-user-tie mr-3 text-indigo-600 w-5 text-center"></i>
+                            <span>Room Owners</span>
+                        </button>
+                        <button onclick="app.showRooms()" class="w-full flex items-center p-3 hover:bg-indigo-50 rounded-lg transition">
+                            <i class="fas fa-door-open mr-3 text-indigo-600 w-5 text-center"></i>
+                            <span>Rooms</span>
+                        </button>
+                        <button onclick="app.showWorkers()" class="w-full flex items-center p-3 hover:bg-indigo-50 rounded-lg transition">
+                            <i class="fas fa-users mr-3 text-indigo-600 w-5 text-center"></i>
+                            <span>Workers/Staff</span>
+                        </button>
+                        <button onclick="app.showProjectSites()" class="w-full flex items-center p-3 hover:bg-indigo-50 rounded-lg transition">
+                            <i class="fas fa-building mr-3 text-indigo-600 w-5 text-center"></i>
+                            <span>Project Sites</span>
+                        </button>
+                    </div>
                 </div>
 
-            <!-- Expiring Soon Card -->
-            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
-                <h3 class="text-lg font-semibold mb-2">Expiring Soon</h3>
-                <p class="text-3xl font-bold mb-2">${this.rooms.filter(room => {
-                    const daysLeft = Math.floor((new Date(room.periodTo) - new Date()) / (1000 * 60 * 60 * 24));
-                    return daysLeft <= 30 && daysLeft >= 0;
-                }).length}</p>
-                <button onclick="app.showExpiringSoon()" 
-                    class="text-yellow-600 hover:text-yellow-800 font-medium">View All</button>
-            </div>
+                <!-- Financial Center -->
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-emerald-500">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-wallet mr-2 text-emerald-600"></i> Financial Center
+                    </h3>
+                    <div class="space-y-3">
+                        <button onclick="app.showPaymentManagement()" class="w-full flex items-center p-3 hover:bg-emerald-50 rounded-lg transition">
+                            <i class="fas fa-rupee-sign mr-3 text-emerald-600 w-5 text-center"></i>
+                            <span>Payments</span>
+                        </button>
+                        <button onclick="app.showExpiringSoon()" class="w-full flex items-center p-3 hover:bg-emerald-50 rounded-lg transition">
+                            <i class="fas fa-clock mr-3 text-emerald-600 w-5 text-center"></i>
+                            <span>Expiring Soon</span>
+                        </button>
+                        <button onclick="app.sendExpirationReminders()" class="w-full flex items-center p-3 hover:bg-emerald-50 rounded-lg transition">
+                            <i class="fas fa-bell mr-3 text-emerald-600 w-5 text-center"></i>
+                            <span>Send Reminders</span>
+                        </button>
+                        <button onclick="app.showReports()" class="w-full flex items-center p-3 hover:bg-emerald-50 rounded-lg transition">
+                            <i class="fas fa-file-invoice-dollar mr-3 text-emerald-600 w-5 text-center"></i>
+                            <span>Financial Reports</span>
+                        </button>
+                    </div>
+                </div>
 
-            <!-- Pending Rent Card -->
-            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
-                <h3 class="text-lg font-semibold mb-2">Pending Rent</h3>
-                <p class="text-3xl font-bold mb-2">₹${this.rooms.reduce((total, room) => {
-                    const paid = room.payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
-                    return total + (room.rent - paid);
-                }, 0)}</p>
-                <button onclick="app.showPaymentManagement()" 
-                    class="text-red-600 hover:text-red-800 font-medium">View Payments</button>
-            </div>
-
-            <!-- Paid Rent Card -->
-            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                <h3 class="text-lg font-semibold mb-2">Paid Rent</h3>
-                <p class="text-3xl font-bold mb-2">₹${this.rooms.reduce((total, room) => {
-                    return total + (room.payments?.reduce((sum, p) => sum + p.amount, 0) || 0);
-                }, 0)}</p>
-                <button onclick="app.showPaymentManagement()" 
-                    class="text-green-600 hover:text-green-800 font-medium">View Details</button>
-            </div>
-            </div>
-            
-            <div class="mt-8 flex flex-wrap gap-4">
-                ${this.currentUser.role === 'admin' ? `
-                <button onclick="app.showUserManagement()" 
-                    class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700">
-                    Manage Users
-                </button>
-                ` : ''}
-                <button onclick="app.addOwner()" 
-                    class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
-                    Add Owner
-                </button>
-                <button onclick="app.addRoom()" 
-                    class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700">
-                    Add Room
-                </button>
-                <button onclick="app.addWorker()" 
-                    class="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700">
-                    Add Worker/Staff
-                </button>
-                <button onclick="app.sendExpirationReminders()" 
-                    class="bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700">
-                    Send Reminders
-                </button>
-                <button onclick="app.showProjectSites()" 
-                    class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700">
-                    Project Sites
-                </button>
-                <button onclick="app.showReports()" 
-                    class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700">
-                    Reports
-                </button>
+                <!-- System Tools -->
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-amber-500">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-tools mr-2 text-amber-600"></i> System Tools
+                    </h3>
+                    <div class="space-y-3">
+                        ${this.currentUser.role === 'admin' ? `
+                        <button onclick="app.showUserManagement()" class="w-full flex items-center p-3 hover:bg-amber-50 rounded-lg transition">
+                            <i class="fas fa-users-cog mr-3 text-amber-600 w-5 text-center"></i>
+                            <span>User Management</span>
+                        </button>
+                        ` : ''}
+                        <button onclick="app.showProfile()" class="w-full flex items-center p-3 hover:bg-amber-50 rounded-lg transition">
+                            <i class="fas fa-user mr-3 text-amber-600 w-5 text-center"></i>
+                            <span>My Profile</span>
+                        </button>
+                        <button onclick="app.showReports()" class="w-full flex items-center p-3 hover:bg-amber-50 rounded-lg transition">
+                            <i class="fas fa-chart-bar mr-3 text-amber-600 w-5 text-center"></i>
+                            <span>Analytics</span>
+                        </button>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="app.exportToPDF('summary')" class="flex items-center p-3 hover:bg-amber-50 rounded-lg transition">
+                                <i class="fas fa-file-pdf mr-2 text-amber-600"></i>
+                                <span>PDF</span>
+                            </button>
+                            <button onclick="app.exportToExcel('summary')" class="flex items-center p-3 hover:bg-amber-50 rounded-lg transition">
+                                <i class="fas fa-file-excel mr-2 text-amber-600"></i>
+                                <span>Excel</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -808,18 +802,28 @@ class RoomRentSystem {
                         <tr>
                             <th class="py-3 px-4 text-left">Name</th>
                             <th class="py-3 px-4 text-left">Contact</th>
+                            <th class="py-3 px-4 text-left">Type</th>
                             <th class="py-3 px-4 text-left">Assigned Room</th>
                             <th class="py-3 px-4 text-left">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         ${this.workers.map(worker => {
-                            const room = this.rooms.find(r => r.workerIds.includes(worker.id));
+                            const assignedRooms = this.rooms.filter(r => r.workerIds.includes(worker.id));
                             return `
                                 <tr>
                                     <td class="py-3 px-4">${worker.name}</td>
                                     <td class="py-3 px-4">${worker.contact}</td>
-                                    <td class="py-3 px-4">${room ? room.roomNo : 'Not assigned'}</td>
+                                    <td class="py-3 px-4">${worker.type}</td>
+                                    <td class="py-3 px-4">
+                                        ${assignedRooms.length > 0 ? 
+                                            assignedRooms.map(r => r.roomNo).join(', ') : 
+                                            'Not assigned'}
+                                        <button onclick="app.showAssignModal('${worker.id}')"
+                                            class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200">
+                                            <i class="fas fa-edit mr-1"></i>Change
+                                        </button>
+                                    </td>
                                     <td class="py-3 px-4">
                                         <button onclick="app.editWorker('${worker.id}')" 
                                             class="text-blue-600 hover:text-blue-800 mr-2">
@@ -837,6 +841,63 @@ class RoomRentSystem {
                 </table>
             </div>
         `;
+    }
+
+    showAssignModal(workerId) {
+        const worker = this.workers.find(w => w.id === workerId);
+        if (!worker) return;
+
+        document.getElementById('content').insertAdjacentHTML('beforeend', `
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white p-6 rounded-lg max-w-md w-full">
+                    <h3 class="text-xl font-bold mb-4">Assign ${worker.name} to Rooms</h3>
+                    <div class="space-y-4">
+                        <label class="block text-gray-700">Available Rooms</label>
+                        <select id="assignRooms" multiple
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            ${this.rooms.map(room => `
+                                <option value="${room.id}" ${room.workerIds.includes(workerId) ? 'selected' : ''}>
+                                    ${room.roomNo} (${room.type})
+                                </option>
+                            `).join('')}
+                        </select>
+                        <p class="text-sm text-gray-500">Hold Ctrl/Cmd to select multiple rooms</p>
+                        <div class="flex space-x-4">
+                            <button onclick="app.saveWorkerAssignment('${workerId}')"
+                                class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
+                                Save
+                            </button>
+                            <button onclick="document.querySelector('.fixed').remove()"
+                                class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+    }
+
+    saveWorkerAssignment(workerId) {
+        const select = document.getElementById('assignRooms');
+        const selectedRoomIds = Array.from(select.selectedOptions).map(opt => opt.value);
+
+        // Remove worker from all rooms first
+        this.rooms.forEach(room => {
+            room.workerIds = room.workerIds.filter(id => id !== workerId);
+        });
+
+        // Add to selected rooms
+        selectedRoomIds.forEach(roomId => {
+            const room = this.rooms.find(r => r.id === roomId);
+            if (room) {
+                room.workerIds.push(workerId);
+            }
+        });
+
+        this.saveData();
+        document.querySelector('.fixed').remove();
+        this.showWorkers();
     }
 
     addWorker() {
