@@ -210,6 +210,10 @@ class RoomRentSystem {
                             <i class="fas fa-building mr-3 text-indigo-600 w-5 text-center"></i>
                             <span>Project Sites</span>
                         </button>
+                        <button onclick="app.showRoomAssignments()" class="w-full flex items-center p-3 hover:bg-indigo-50 rounded-lg transition">
+                            <i class="fas fa-user-check mr-3 text-indigo-600 w-5 text-center"></i>
+                            <span>Room Assignments</span>
+                        </button>
                     </div>
                 </div>
 
@@ -774,6 +778,142 @@ class RoomRentSystem {
             this.rooms = this.rooms.filter(r => r.id !== roomId);
             this.saveData();
             this.showRooms();
+        }
+    }
+
+    showRoomAssignments() {
+        document.getElementById('content').innerHTML = `
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold">Room Assignments</h2>
+                    <p class="text-gray-500">${this.projectName}</p>
+                </div>
+                <button onclick="app.showDashboard()" 
+                    class="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700">
+                    Back to Dashboard
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left">Room</th>
+                            <th class="py-3 px-4 text-left">Type</th>
+                            <th class="py-3 px-4 text-left">Assigned Workers</th>
+                            <th class="py-3 px-4 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        ${this.rooms.map(room => {
+                            const workers = room.workerIds.map(id => 
+                                this.workers.find(w => w.id === id)?.name || 'Unknown'
+                            ).join(', ');
+                            
+                            return `
+                                <tr>
+                                    <td class="py-3 px-4">${room.roomNo}</td>
+                                    <td class="py-3 px-4">${room.type}</td>
+                                    <td class="py-3 px-4">
+                                        ${workers || 'None'}
+                                        <button onclick="app.showAssignModalForRoom('${room.id}')"
+                                            class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200">
+                                            <i class="fas fa-edit mr-1"></i>Edit
+                                        </button>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <button onclick="app.editRoom('${room.id}')" 
+                                            class="text-blue-600 hover:text-blue-800 mr-2">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    showAssignModalForRoom(roomId) {
+        const room = this.rooms.find(r => r.id === roomId);
+        if (!room) return;
+
+        document.getElementById('content').insertAdjacentHTML('beforeend', `
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white p-6 rounded-lg max-w-md w-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">Assign Workers to Room ${room.roomNo}</h3>
+                        <button onclick="document.querySelector('.fixed').remove()" 
+                            class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Available Workers</label>
+                            <div class="max-h-60 overflow-y-auto border rounded-lg">
+                                ${this.workers.map(worker => `
+                                    <label class="flex items-center p-3 hover:bg-gray-50 border-b last:border-b-0">
+                                        <input type="checkbox" 
+                                            value="${worker.id}" 
+                                            ${room.workerIds.includes(worker.id) ? 'checked' : ''}
+                                            class="rounded text-blue-600 focus:ring-blue-500 mr-3">
+                                        <div>
+                                            <p class="font-medium">${worker.name}</p>
+                                            <p class="text-sm text-gray-500">${worker.type} • ${worker.contact}</p>
+                                        </div>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-3 pt-2">
+                            <button onclick="app.saveRoomAssignments('${roomId}')"
+                                class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 
+                                flex items-center justify-center">
+                                <i class="fas fa-save mr-2"></i> Save Assignments
+                            </button>
+                            <button onclick="app.clearRoomAssignments('${roomId}')"
+                                class="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300
+                                flex items-center justify-center">
+                                <i class="fas fa-trash-alt mr-2"></i> Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+    }
+
+    saveRoomAssignments(roomId) {
+        const checkboxes = document.querySelectorAll('.fixed input[type="checkbox"]');
+        const selectedWorkerIds = Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        const room = this.rooms.find(r => r.id === roomId);
+        if (room) {
+            room.workerIds = selectedWorkerIds;
+            this.saveData();
+            document.querySelector('.fixed').remove();
+            this.showRoomAssignments();
+            alert('Room assignments updated successfully');
+        }
+    }
+
+    clearRoomAssignments(roomId) {
+        if (confirm('Remove all workers from this room?')) {
+            const room = this.rooms.find(r => r.id === roomId);
+            if (room) {
+                room.workerIds = [];
+                this.saveData();
+                document.querySelector('.fixed').remove();
+                this.showRoomAssignments();
+                alert('All workers removed from this room');
+            }
         }
     }
 
